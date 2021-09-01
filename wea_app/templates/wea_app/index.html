@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <!-- Bootstrap CSS -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'wea_app/css/card.css' %}">
+    
+    <!-- <script src="{% static 'wea_app/js/card.js' %}"></script> -->
+    <title>Weather</title>
+  </head>
+  <body>
+<!-- As a heading -->
+<div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container px-5">
+                    <a class="navbar-brand" href="/">What's the weather outside??</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        
+                    </div>
+                </div>
+            </nav>
+</div>
+
+    <header class="bg-dark py-5">
+        <div class="container px-5">
+            <div class="row gx-5 align-items-center justify-content-center">
+                <div class="col-lg-8 col-xl-7 col-xxl-6">
+                    <div class="my-5 text-center text-xl-start">
+                        <h1 class="display-5 fw-bolder text-white mb-5">Check the current weather of any city</h1>
+                        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
+                            <aside class="bg-primary bg-gradient rounded-3 p-4 p-sm-5 mt-5">
+                                <div class="d-flex align-items-center justify-content-between flex-column flex-xl-row text-center text-xl-start">
+                                    <div class="mb-4 mb-xl-0">
+                                        <div class="fs-3 fw-bold text-white">Enter the City Name</div>
+                                    </div>
+                                    <div class="ms-xl-4">
+                                        <div class="input-group mb-2">
+                                          <form method="POST">{% csrf_token %}
+                                            {{form.name}}
+                                            <button type="submit" class="btn btn-outline-light mt-2" id="button-newsletter" type="button">Get Info</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% for mainresult in weather_data %}
+    <div class="container" id="wrapper">
+        <div class="container-fluid" id="current-weather">
+          <div class="row">
+            
+            <!-- Right panel -->
+            <div class="col-md-4 col-sm-5">
+              <h4><spam id="cityName"></spam>{{mainresult.city}},<spam id="cityCode">{{mainresult.countrycode}}</spam></h4>
+              <p id="localTimezone">{{mainresult.timezone}}<p>
+              <h5 id="localtime">{{mainresult.dt}}</h5>
+              <h6 id="localdate">{{mainresult.dtdate}}</h6>
+
+              <a id="refreshButton" href="javascript:window.location.reload(true)"><i class="fa fa-refresh fa-fw" aria-hidden="true" type ="submit"></i> Refresh</a>
+            </div>
+            
+            <!-- Center panel -->
+            <div class="col-md-5 col-sm-7" style="margin: 10px auto;padding:0;">
+              <div>
+              <!-- <img src="{% static 'wea_app/icons/{{icon}}.png' %}"> -->
+                <div>
+                  <spam id="mainTemperature">{{mainresult.temprature}}°C</spam>
+                </div>
+                  <h4 id="tempDescription">{{mainresult.description}}</h4>
+              </div>
+            </div>
+            
+            <!-- Left panel -->
+            <div class="col-xs-12 col-sm-12 col-md-3 row" style="text-align: right;">
+              <div class="col-md-12 col-sm-3 col-xs-3 side-weather-info">
+                <h6>Humidity : {{mainresult.humidity}} <spam id="humidity"></spam>%</h6>
+              </div>
+              <div class="col-md-12 col-sm-3 col-xs-3 side-weather-info">
+                <h6>Wind : {{mainresult.windspeed}} <spam id="wind"></spam> m/s</h6>
+              </div>
+              <div class="col-md-12 col-sm-3 col-xs-3 side-weather-info">
+                <h6>Pressure : {{mainresult.pressure}} <spam id="pressure"></spam>Pa</h6>
+              </div>
+              <div class="col-md-12 col-sm-3 col-xs-3 side-weather-info">
+                <h6>Feels like : {{mainresult.feels}} <spam id="feels"></spam>°C</h6>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="protocol-modal" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body">
+                <p>Due to weather api restrictions, data can only be shown via HTTP request.</p>
+                <p>Sorry for the inconvenience.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 4 days forecast -->
+        <div class="container-fluid">
+          <div class="row" style="padding: 2px;">
+            
+            <!-- Day 1 -->
+            <div class="col-md-3 col-sm-6 day-weather-box">
+              <div class="col-sm-12 day-weather-inner-box">
+                <div class="col-sm-8 forecast-main">
+                  <p id="forecast-day-1-name">{{mainresult.dtforecastdate1}}</p>
+                  <div class="row">
+                    <h5 id="forecast-day-1-main">{{mainresult.temprature1}}°C</h5>
+                    <i class="wi forecast-icon" id="forecast-day-2-icon"></i>
+                  </div>
+                </div>
+                <div class="col-sm-4 forecast-min-low">
+                  <p><spam class="high-temperature" id="forecast-day-1-ht"></spam>High:{{mainresult.max1}}</p>
+                  <p><spam class="low-temperature" id="forecast-day-1-lt"></spam>Low:{{mainresult.min1}}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Day 2 -->
+            <div class="col-md-3 col-sm-6 day-weather-box">
+              <div class="col-sm-12 day-weather-inner-box">
+                <div class="col-sm-8 forecast-main">
+                  <p id="forecast-day-2-name">{{mainresult.dtforecastdate2}}</p>
+                  <div class="row">
+                    <h5 id="forecast-day-2-main">{{mainresult.temprature2}}°C</h5>
+                    <i class="wi forecast-icon" id="forecast-day-2-icon"></i>
+                  </div>
+                </div>
+                <div class="col-sm-4 forecast-min-low">
+                  <p><spam class="high-temperature" id="forecast-day-2-ht"></spam>High:{{mainresult.max2}}</p>
+                  <p><spam class="low-temperature" id="forecast-day-2-lt"></spam>Low:{{mainresult.min2}}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Day 3 -->
+            <div class="col-md-3 col-sm-6 day-weather-box">
+              <div class="col-sm-12 day-weather-inner-box">
+                <div class="col-sm-8 forecast-main">
+                  <p id="forecast-day-3-name">{{mainresult.dtforecastdate3}}</p>
+                  <div class="row">
+                    <h5 id="forecast-day-3-main">{{mainresult.temprature3}}°C</h5>
+                    <i class="wi forecast-icon" id="forecast-day-3-icon"></i>
+                  </div>
+                </div>
+                <div class="col-sm-4 forecast-min-low">
+                  <p><spam class="high-temperature" id="forecast-day-3-ht"></spam>High:{{mainresult.max3}}</p>
+                  <p><spam class="low-temperature" id="forecast-day-3-lt"></spam>Low:{{mainresult.min3}}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Day 4 -->
+            <div class="col-md-3 col-sm-6 day-weather-box">
+              <div class="col-sm-12 day-weather-inner-box">
+                <div class="col-sm-8 forecast-main">
+                  <p id="forecast-day-4-name">{{mainresult.dtforecastdate4}}</p>
+                  <div class="row">
+                    <h5 id="forecast-day-4-main">{{mainresult.temprature4}}°C</h5>
+                    <i class="wi forecast-icon" id="forecast-day-4-icon"></i>
+                  </div>
+                </div>
+                <div class="col-sm-4 forecast-min-low">
+                  <p><spam class="high-temperature" id="forecast-day-4-ht"></spam>High:{{mainresult.max4}}</p>
+                  <p><spam class="low-temperature" id="forecast-day-4-lt"></spam>Low:{{mainresult.min4}}</p>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+    -->
+  </body>
+</html>
