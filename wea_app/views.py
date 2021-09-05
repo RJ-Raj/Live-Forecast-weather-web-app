@@ -74,9 +74,7 @@ def index(request):
 
             }
             weather_data.append(mainresult)
-    
-    icon = mainresult['icons']
-    context = {"weather_data":weather_data,"icon":icon,"form":form}
+    context = {"weather_data":weather_data,"form":form}
     return render(request,'wea_app/index.html',context)
 # return render(request,'wea_app/index.html')
 

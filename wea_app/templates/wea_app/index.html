@@ -73,7 +73,7 @@
             <!-- Center panel -->
             <div class="col-md-5 col-sm-7" style="margin: 10px auto;padding:0;">
               <div>
-              <!-- <img src="{% static 'wea_app/icons/{{icon}}.png' %}"> -->
+               <img src="{% static 'wea_app/icons/'|add:mainresult.icons|add:'.png' %}"> 
                 <div>
                   <spam id="mainTemperature">{{mainresult.temprature}}°C</spam>
                 </div>
