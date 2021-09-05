@@ -1,19 +1,40 @@
-from django.shortcuts import render,HttpResponse
+from django.shortcuts import redirect, render,HttpResponse
 import requests
 import time
 import datetime
 from .models import City
 from.forms import CityForm
+from django.contrib import messages 
 
 
 # Create your views here.
 def index(request):
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid=4defe20be9fb35451c4bdd6801bdc930'
-
+    msg = ""
+    alert_msg = ""
     if request.method == 'POST':
         form = CityForm(request.POST)
-        form.save()
-    
+
+        if form.is_valid():
+            new_city = form.cleaned_data['name']
+            exisiting_city = City.objects.filter(name=new_city).count()
+
+            if exisiting_city == 0:
+                r = requests.get(url.format(new_city)).json()
+                if r['cod'] == 200:
+                    form.save()
+                else:
+                    msg = "City not found"
+            else:
+                msg ="City already added!"
+
+        if msg:
+            alert_msg = msg
+            messages.warning(request,alert_msg)
+        else:
+            alert_msg = "City added successfully! Add another city!"
+            messages.success(request,alert_msg)
+
     form = CityForm()
 
     cities = City.objects.all()
@@ -74,9 +95,14 @@ def index(request):
 
             }
             weather_data.append(mainresult)
-    context = {"weather_data":weather_data,"form":form}
+    context = {"weather_data":weather_data,
+                "form":form}
     return render(request,'wea_app/index.html',context)
 # return render(request,'wea_app/index.html')
+
+def delete_city(request,city_name):
+    City.objects.get(name=city_name).delete()
+    return redirect('index')
 
 
 
